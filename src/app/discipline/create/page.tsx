@@ -1,5 +1,6 @@
 "use client";
-
+import { IconButton } from "@chakra-ui/react";
+import { ChevronLeftIcon } from "@chakra-ui/icons";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import SaveButtonComponent from "../../components/SaveButtonComponent";
@@ -61,15 +62,17 @@ export default function CreateDisciplinePage() {
       <div className="w-full max-w-3xl px-6 flex flex-col gap-6">
         {/* Back Button + Title */}
         <div className="flex items-center gap-4">
-          <button
+          <IconButton
+            aria-label="Go back"
             onClick={() => router.back()}
-            className="flex items-center justify-center w-8 h-8 text-gray-700 hover:text-black hover:bg-gray-100 rounded-lg transition"
+            variant="ghost"
+            size="md"
           >
-            <span className="text-xl">←</span>
-          </button>
+            <ChevronLeftIcon boxSize={6} />
+          </IconButton>
           <div>
             <h1 className="custom-title text-2xl font-bold">Thêm mới Danh mục</h1>
-            <p className="custom-desc text-sm text-gray-500">Nhập thông tin danh mục mới</p>
+            <p className="custom-desc text-sm text-gray-500 !m-0">Nhập thông tin danh mục mới</p>
           </div>
         </div>
 

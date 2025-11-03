@@ -17,7 +17,7 @@ interface TokenResponse {
   [key: string]: unknown;
 }
 
-// Hàm lấy token, không dùng any, ép kiểu đúng
+
 export const getToken$ = (): Observable<string> =>
   ajax<TokenResponse>({
     url: TOKEN_URL,
@@ -26,16 +26,16 @@ export const getToken$ = (): Observable<string> =>
     body: [
       "grant_type=password",
       "scope=offline_access CxmApi",
-      "client_id=CxmApi_App",
-      "username=admin",
-      "password=Hicas0809@Hcm",
+      `client_id=${process.env.NEXT_PUBLIC_API_CLIENT_ID}`,
+      `username=${process.env.NEXT_PUBLIC_API_USERNAME}`,
+      `password=${process.env.NEXT_PUBLIC_API_PASSWORD}`,
       "remember=true"
     ].join("&"),
   }).pipe(
     map((res) => res.response.access_token)
   );
 
-// Hàm lấy project với token
+
 export const getProjects$ = (): Observable<Project[]> =>
   getToken$().pipe(
     switchMap((token) =>
@@ -47,7 +47,7 @@ export const getProjects$ = (): Observable<Project[]> =>
     )
   );
 
-// Các hàm khác giữ nguyên
+
 export const getListDiscipline$ = () =>
   ajax
     .getJSON<{ items: Discipline[]; totalCount: number }>(

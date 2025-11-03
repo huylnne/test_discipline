@@ -1,8 +1,12 @@
 "use client";
-
+import { IconButton } from "@chakra-ui/react";
+import { ChevronLeftIcon } from "@chakra-ui/icons";
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { getDiscipline$, updateDiscipline$ } from "../../../../services/disciplineService";
+import {
+  getDiscipline$,
+  updateDiscipline$,
+} from "../../../../services/disciplineService";
 import { Discipline } from "../../../../store/disciplineSlice";
 import SaveButtonComponent from "../../../components/SaveButtonComponent";
 import CancelButtonComponent from "../../../components/CancelButtonComponent";
@@ -42,7 +46,9 @@ export default function EditDisciplinePage() {
     return () => sub.unsubscribe();
   }, [id]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const target = e.target;
     const name = target.name;
     let value: string | boolean;
@@ -90,16 +96,22 @@ export default function EditDisciplinePage() {
     <div className="min-h-screen bg-[#f9fafb] flex justify-center items-center">
       <div className="w-full max-w-3xl px-6 flex flex-col gap-6">
         {/* Back Button + Title */}
-        <div className="flex items-center gap-4">
-          <button
+        <div className="flex items-center gap-4 ">
+          <IconButton
+            aria-label="Go back"
             onClick={() => router.back()}
-            className="flex items-center justify-center w-8 h-8 text-gray-700 hover:text-black hover:bg-gray-100 rounded-lg transition"
+            variant="ghost"
+            size="md"
           >
-            <span className="text-xl">←</span>
-          </button>
+            <ChevronLeftIcon boxSize={6} />
+          </IconButton>
           <div>
-            <h1 className="custom-title text-2xl font-bold">Chỉnh sửa Danh mục</h1>
-            <p className="custom-desc text-sm text-gray-500">Cập nhật thông tin danh mục</p>
+            <h1 className="custom-title text-2xl font-bold">
+              Chỉnh sửa Danh mục
+            </h1>
+            <p className="custom-desc text-sm text-gray-500 !m-0">
+              Cập nhật thông tin danh mục
+            </p>
           </div>
         </div>
 
