@@ -29,39 +29,64 @@ export const getToken$ = (): Observable<string> =>
       `client_id=${process.env.NEXT_PUBLIC_API_CLIENT_ID}`,
       `username=${process.env.NEXT_PUBLIC_API_USERNAME}`,
       `password=${process.env.NEXT_PUBLIC_API_PASSWORD}`,
-      "remember=true"
+      "remember=true",
     ].join("&"),
-  }).pipe(
-    map((res) => res.response.access_token)
-  );
+  }).pipe(map((res) => res.response.access_token));
 
 
 export const getProjects$ = (): Observable<Project[]> =>
   getToken$().pipe(
     switchMap((token) =>
-      ajax.getJSON<{ totalCount: number; items: Project[] }>(PROJECT_BASE, {
-        Authorization: `Bearer ${token}`,
-      }).pipe(
-        map((res) => res.items.map((item) => ({ id: item.id, name: item.name })))
-      )
+      ajax
+        .getJSON<{ totalCount: number; items: Project[] }>(PROJECT_BASE, {
+          Authorization: `Bearer ${token}`,
+        })
+        .pipe(
+          map((res) => res.items.map((item) => ({ id: item.id, name: item.name })))
+        )
     )
   );
+
 
 
 export const getListDiscipline$ = () =>
   ajax
     .getJSON<{ items: Discipline[]; totalCount: number }>(
-      `${API_BASE}?MaxResultCount=150`
+      `${API_BASE}?MaxResultCount=500`
     )
     .pipe(map((res) => res.items));
 
 export const getDiscipline$ = (id: string) =>
   ajax.getJSON<Discipline>(`${API_BASE}/${id}`);
 
-export const createDiscipline$ = (data: Omit<Discipline, "id">) =>
-  ajax
-    .post(`${API_BASE}`, data, { "Content-Type": "application/json" })
-    .pipe(map((res) => res.response));
+
+export const createDiscipline$ = (data: Omit<Discipline, "id" | "code">) =>
+  getListDiscipline$().pipe(
+    map((list) => {
+      const isDuplicate = list.some(
+        (d) => d.name.trim().toLowerCase() === data.name.trim().toLowerCase()
+      );
+
+      if (isDuplicate) {
+        throw new Error("Tên danh mục đã tồn tại, vui lòng chọn tên khác.");
+      }
+      const codes = list
+        .map((d) => d.code)
+        .filter((c) => /^DISC\d+$/.test(c))
+        .map((c) => parseInt(c.replace("DISC", ""), 10));
+
+      const max = codes.length > 0 ? Math.max(...codes) : 0;
+      const next = max + 1;
+      const newCode = `DISC${String(next).padStart(2, "0")}`;
+
+      return { ...data, code: newCode };
+    }),
+    switchMap((payload) =>
+      ajax
+        .post(`${API_BASE}`, payload, { "Content-Type": "application/json" })
+        .pipe(map((res) => res.response))
+    )
+  );
 
 export const updateDiscipline$ = (id: string, data: Discipline) =>
   ajax

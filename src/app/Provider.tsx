@@ -1,14 +1,22 @@
 "use client";
 
-import { ChakraProvider } from "@chakra-ui/react";
-import { system } from "@chakra-ui/react/preset";
+import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import { Provider as ReduxProvider } from "react-redux";
 import { store } from "../store";
+
+// ✅ Khai báo theme (thay cho system preset)
+const theme = extendTheme({
+  config: {
+    initialColorMode: "light",
+    useSystemColorMode: false,
+  },
+});
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <ReduxProvider store={store}>
-      <ChakraProvider value={system}>
+      {/* ✅ Dùng theme thay vì value={system} */}
+      <ChakraProvider theme={theme}>
         {children}
       </ChakraProvider>
     </ReduxProvider>

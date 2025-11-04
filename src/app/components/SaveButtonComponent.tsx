@@ -13,10 +13,10 @@ export default function SaveButtonComponent({
 }: SaveButtonComponentProps) {
   return (
     <Button
-      bg="black"
+      bg="#263E90"
       color="white"
       onClick={onClick}
-      loading={isLoading}
+      isLoading={isLoading}
       disabled={disabled}
       _hover={{ bg: "gray.800" }}
     >

@@ -12,10 +12,10 @@ export default function CreateButtonComponent({
 }: CreateButtonComponentProps) {
   return (
     <Button
-      bg="black"
+      bg="#263E90"
       color="white"
       onClick={onClick}
-      loading={isLoading}
+      isLoading={isLoading}
       _hover={{ bg: "gray.800" }}
       {...props}
     >

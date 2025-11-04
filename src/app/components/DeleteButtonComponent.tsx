@@ -13,9 +13,10 @@ export default function DeleteButtonComponent({
 }: DeleteButtonComponentProps) {
   return (
     <Button
-      colorScheme="red"
+      bg="#263E90"
+      color="white"
       onClick={onClick}
-      loading={isLoading}
+      isLoading={isLoading}
       fontWeight="bold"
     >
       {children}

@@ -1,20 +1,23 @@
 "use client";
 
-import { Box, Heading, Text, Input, Button, Flex } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "../store";
 import { useEffect, useState, useCallback } from "react";
 import { setList, setLoading } from "../store/disciplineSlice";
+import { AgGridReact } from "ag-grid-react";
+import type { ColDef, ICellRendererParams } from "ag-grid-community";
+import { ModuleRegistry, AllCommunityModule } from "ag-grid-community";
+import "ag-grid-community/styles/ag-grid.css";
+import "ag-grid-community/styles/ag-theme-quartz.css";
 import {
   getListDiscipline$,
   deleteDiscipline$,
 } from "../services/disciplineService";
 import CreateButtonComponent from "./components/CreateButtonComponent";
 import ConfirmDeletePopup from "./components/ConfirmDeletePopup";
-import "ag-grid-community/styles/ag-grid.css";
-import "ag-grid-community/styles/ag-theme-alpine.css";
 
+ModuleRegistry.registerModules([AllCommunityModule]);
 
 export default function Home() {
   const router = useRouter();
@@ -65,7 +68,7 @@ export default function Home() {
         setDeleteLoading(false);
         setDeletePopupOpen(false);
         setSelectedDeleteId(null);
-        loadData(); // Reload danh sách
+        loadData();
       },
       error: () => {
         setDeleteLoading(false);
@@ -73,108 +76,164 @@ export default function Home() {
     });
   };
 
-  return (
-    <Box p={8}>
-      <Heading size="lg" mb={2}>
-        Quản lý Danh mục
-      </Heading>
-      <Text mb={6}>Quản lý danh sách các danh mục trong hệ thống</Text>
-      <Flex mb={4} gap={2} align="center">
-        <Input
-          placeholder="Tìm kiếm theo mã, tên hoặc mô tả..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          maxW="400px"
-        />
-        <CreateButtonComponent
-          onClick={() => router.push("/discipline/create")}
-        />
-      </Flex>
-
-      <Box bg="white" rounded="lg" shadow="sm" p={4}>
-        <div className="overflow-x-auto">
-          <table
-            className="min-w-full border-separate align-middle"
-            style={{ borderSpacing: "0 12px" }}
+  const columnDefs: ColDef[] = [
+    {
+      field: "code",
+      headerName: "Mã danh mục",
+      width: 150,
+      sortable: true,
+      filter: false,
+    },
+    {
+      field: "name",
+      headerName: "Tên danh mục",
+      width: 250,
+      flex: 1,
+      sortable: true,
+      filter: false,
+    },
+    {
+      field: "description",
+      headerName: "Mô tả",
+      width: 300,
+      flex: 1,
+      sortable: true,
+      filter: false,
+    },
+    {
+      field: "isActive",
+      headerName: "Trạng thái",
+      width: 150,
+      sortable: true,
+      filter: false,
+      cellRenderer: (props: ICellRendererParams) => (
+        <span
+          className={`px-3 py-1 rounded-full text-sm font-medium inline-block ${
+            props.value
+              ? "bg-green-100 text-green-800"
+              : "bg-gray-100 text-gray-800"
+          }`}
+        >
+          {props.value ? "Đang hoạt động" : "Không hoạt động"}
+        </span>
+      ),
+    },
+    {
+      field: "actions",
+      headerName: "Chức năng",
+      width: 120,
+      sortable: false,
+      filter: false,
+      cellClass: "text-center",
+      headerClass: "no-border-right",
+      cellRenderer: (props: ICellRendererParams) => (
+        <div className="flex items-center justify-center h-full w-full gap-2">
+          <button
+            onClick={() => router.push(`/discipline/${props.data.id}/edit`)}
+            className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 p-2 rounded transition"
+            title="Sửa"
           >
-            <thead>
-              <tr>
-                <th className="text-left px-4 py-2 flex align-middle">Mã</th>
-                <th className="text-left px-4 py-2">Tên</th>
-                <th className="text-left px-4 py-2">Mô tả</th>
-                <th className="text-left px-4 py-2">Trạng thái</th>
-                <th className="text-left px-4 py-2">Thao tác</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredList.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={5}
-                    className="px-4 py-8 text-center text-gray-500"
-                  >
-                    Không có dữ liệu
-                  </td>
-                </tr>
-              ) : (
-                filteredList.map((item) => (
-                  <tr
-                    key={item.id}
-                    className="bg-white shadow-sm rounded-lg border border-gray-300"
-                  >
-                    <td className="px-4 py-4 align-middle h-12">{item.code}</td>
-                    <td className="px-4 py-4 align-middle">{item.name}</td>
-                    <td className="px-4 py-4 align-middle">
-                      {item.description}
-                    </td>
-                    <td className="px-4 py-4 align-middle">
-                      <span
-                        className={`px-2 py-1 align-middle rounded text-sm ${
-                          item.isActive
-                            ? "bg-green-100 text-green-800"
-                            : "bg-gray-100 text-gray-800"
-                        }`}
-                      >
-                        {item.isActive ? "Hoạt động" : "Không hoạt động"}
-                      </span>
-                    </td>
-                    <td className="px-4 py-4 align-middle">
-                      <div className="flex gap-2 items-center h-full">
-                        <Button
-                          size="sm"
-                          onClick={() =>
-                            router.push(`/discipline/${item.id}/edit`)
-                          }
-                        >
-                          ✏️ Sửa
-                        </Button>
-                        <Button
-                          size="sm"
-                          bg="red.500"
-                          color="white"
-                          onClick={() => handleDeleteClick(item.id!)}
-                        >
-                          🗑️ Xóa
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M14.06 9.02L14.98 9.94L5.92 19H5V18.08L14.06 9.02ZM17.66 3C17.41 3 17.15 3.1 16.96 3.29L15.13 5.12L18.88 8.87L20.71 7.04C21.1 6.65 21.1 6.02 20.71 5.63L18.37 3.29C18.17 3.09 17.92 3 17.66 3ZM14.06 6.19L3 17.25V21H6.75L17.81 9.94L14.06 6.19Z"
+                fill="#263E90"
+              />
+            </svg>
+          </button>
+          <button
+            onClick={() => handleDeleteClick(props.data.id)}
+            className="text-red-600 hover:text-red-800 hover:bg-red-50 p-2 rounded transition"
+            title="Xóa"
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M16 9V19H8V9H16ZM14.5 3H9.5L8.5 4H5V6H19V4H15.5L14.5 3ZM18 7H6V19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V7Z"
+                fill="#F5222D"
+              />
+            </svg>
+          </button>
         </div>
-      </Box>
+      ),
+    },
+  ];
 
-      
-      <ConfirmDeletePopup
-        isOpen={deletePopupOpen}
-        onClose={() => setDeletePopupOpen(false)}
-        onConfirm={handleConfirmDelete}
-        isLoading={deleteLoading}
-        title="Xác nhận xóa"
-        message="Bạn có chắc chắn muốn xóa danh mục này không? Hành động này không thể hoàn tác."
-      />
-    </Box>
+  return (
+    <div className="h-screen flex flex-col bg-[#f5f7fa]">
+      <div className="flex-1 flex flex-col p-6 max-w-full">
+        {/* Header */}
+        <div className=" flex justify-between h-[72px] !px-2  align-middle">
+          <h1 className=" flex text-3xl !font-bold text-gray-900 items-center">
+            DANH SÁCH DANH MỤC
+          </h1>
+
+          {/* Search & Create Button */}
+          <div className="flex h-full justify-between items-center mb-4 gap-4 ">
+            <div className="flex-1 max-w-md">
+              <input
+                type="text"
+                placeholder="Tìm kiếm"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full h-[40px] px-4 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <CreateButtonComponent
+              onClick={() => router.push("/discipline/create")}
+            />
+          </div>
+        </div>
+
+        {/* AG-Grid Table */}
+        <div className="flex-1 bg-white rounded-lg border border-gray-200 shadow-sm ">
+          <div className="ag-theme-quartz custom-ag-theme h-full w-full">
+            <AgGridReact
+              theme="legacy"
+              rowData={filteredList}
+              columnDefs={columnDefs}
+              pagination={true}
+              paginationPageSize={10}
+              paginationPageSizeSelector={[10, 15, 20, 50]}
+              defaultColDef={{
+                resizable: true,
+                wrapText: false,
+                autoHeight: false,
+              }}
+              domLayout="normal"
+              suppressPaginationPanel={false}
+              suppressRowClickSelection={true}
+              animateRows={true}
+              rowHeight={64}
+              headerHeight={55}
+            />
+          </div>
+        </div>
+
+        {/* Delete Confirmation Popup */}
+        <ConfirmDeletePopup
+          isOpen={deletePopupOpen}
+          onClose={() => {
+            setDeletePopupOpen(false);
+            setSelectedDeleteId(null);
+          }}
+          onConfirm={handleConfirmDelete}
+          isLoading={deleteLoading}
+          title="Xác nhận xóa"
+          message="Bạn có chắc chắn muốn xóa danh mục này không? Hành động này không thể hoàn tác."
+        />
+      </div>
+    </div>
   );
 }
