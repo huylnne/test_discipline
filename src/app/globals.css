@@ -76,25 +76,7 @@ body {
 }
 
 
-.ag-theme-quartz.custom-ag-theme .ag-header-cell:last-child::after {
-  display: none !important;
-}
 
-.ag-theme-quartz.custom-ag-theme .ag-header-cell.ag-last-column::after {
-  display: none !important;
-}
-
-.ag-theme-quartz.custom-ag-theme .ag-header-cell.ag-header-cell-resize::after,
-.ag-theme-quartz.custom-ag-theme .ag-header-cell.ag-header-cell-resize-right::after,
-.ag-theme-quartz.custom-ag-theme .ag-header-viewport::after {
-  display: none !important;
-}
-
-
-.ag-theme-quartz.custom-ag-theme .ag-header-cell[col-id="actions"]::after {
-  display: none !important;
-}
-
-.ag-theme-quartz .ag-header-cell.no-border-right::after {
+.ag-theme-quartz .ag-header-cell:last-child .ag-header-cell-resize {
   display: none !important;
 }

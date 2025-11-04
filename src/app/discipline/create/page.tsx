@@ -33,7 +33,7 @@ export default function CreateDisciplinePage() {
     projectId: "",
   });
 
-  // 🔹 Lấy danh sách dự án
+  //  Lấy danh sách dự án
   useEffect(() => {
     const sub = getProjects$().subscribe({
       next: (data) => setProjects(data),
@@ -42,7 +42,7 @@ export default function CreateDisciplinePage() {
     return () => sub.unsubscribe();
   }, []);
 
-  // 🔹 Cập nhật dữ liệu form
+  //  Cập nhật dữ liệu form
   const handleChange = (
     e:
       | React.ChangeEvent<HTMLInputElement>
@@ -61,7 +61,7 @@ export default function CreateDisciplinePage() {
     });
   };
 
-  // 🔹 Lưu dữ liệu
+  //  Lưu dữ liệu
   const handleSave = () => {
     if (!formData.name.trim() || !formData.projectId) {
       toast({

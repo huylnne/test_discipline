@@ -125,7 +125,6 @@ export default function Home() {
       sortable: false,
       filter: false,
       cellClass: "text-center",
-      headerClass: "no-border-right",
       cellRenderer: (props: ICellRendererParams) => (
         <div className="flex items-center justify-center h-full w-full gap-2">
           <button
