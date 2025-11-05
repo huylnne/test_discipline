@@ -119,6 +119,7 @@ export default function Home() {
       ),
     },
     {
+      colId: "actions",
       field: "actions",
       headerName: "Chức năng",
       width: 120,
@@ -133,15 +134,16 @@ export default function Home() {
             title="Sửa"
           >
             <svg
-              width="24"
-              height="24"
+              width="20"
+              height="20"
               viewBox="0 0 24 24"
               fill="none"
+              color="#263E90"
               xmlns="http://www.w3.org/2000/svg"
             >
               <path
                 d="M14.06 9.02L14.98 9.94L5.92 19H5V18.08L14.06 9.02ZM17.66 3C17.41 3 17.15 3.1 16.96 3.29L15.13 5.12L18.88 8.87L20.71 7.04C21.1 6.65 21.1 6.02 20.71 5.63L18.37 3.29C18.17 3.09 17.92 3 17.66 3ZM14.06 6.19L3 17.25V21H6.75L17.81 9.94L14.06 6.19Z"
-                fill="#263E90"
+                fill="currentColor"
               />
             </svg>
           </button>
@@ -151,15 +153,16 @@ export default function Home() {
             title="Xóa"
           >
             <svg
-              width="24"
-              height="24"
+              width="20"
+              height="20"
               viewBox="0 0 24 24"
               fill="none"
+              color="red"
               xmlns="http://www.w3.org/2000/svg"
             >
               <path
                 d="M16 9V19H8V9H16ZM14.5 3H9.5L8.5 4H5V6H19V4H15.5L14.5 3ZM18 7H6V19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V7Z"
-                fill="#F5222D"
+                fill="currentColor"
               />
             </svg>
           </button>
@@ -172,20 +175,20 @@ export default function Home() {
     <div className="h-screen flex flex-col bg-[#f5f7fa]">
       <div className="flex-1 flex flex-col p-6 max-w-full">
         {/* Header */}
-        <div className=" flex justify-between h-[72px] !px-2  align-middle">
-          <h1 className=" flex text-3xl !font-bold text-gray-900 items-center">
+        <div className="flex justify-between h-[72px] !px-2 align-middle">
+          <h1 className="flex text-3xl !font-bold text-gray-900 items-center">
             DANH SÁCH DANH MỤC
           </h1>
 
           {/* Search & Create Button */}
-          <div className="flex h-full justify-between items-center mb-4 gap-4 ">
+          <div className="flex h-full justify-between items-center mb-4 gap-4">
             <div className="flex-1 max-w-md">
               <input
                 type="text"
                 placeholder="Tìm kiếm"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full h-[40px] px-4 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full h-[40px] px-4 rounded-lg bg-white border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
@@ -196,7 +199,7 @@ export default function Home() {
         </div>
 
         {/* AG-Grid Table */}
-        <div className="flex-1 bg-white rounded-lg border border-gray-200 shadow-sm ">
+        <div className="flex-1 bg-white rounded-lg border border-gray-200 shadow-sm">
           <div className="ag-theme-quartz custom-ag-theme h-full w-full">
             <AgGridReact
               theme="legacy"

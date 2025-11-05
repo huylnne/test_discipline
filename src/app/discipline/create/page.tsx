@@ -101,7 +101,7 @@ export default function CreateDisciplinePage() {
   };
 
   return (
-    <Box bg="gray.50" minH="100vh" py={8}>
+    <Box bg="pageBg" minH="100vh" py={8}>
       {/* Container */}
       <Box px={10} w="full" maxW="6xl" mx="auto">
         {/* Header */}
@@ -128,7 +128,7 @@ export default function CreateDisciplinePage() {
 
         {/* Form box */}
         <Box
-          bg="white"
+          bg="surface"
           borderRadius="md"
           boxShadow="sm"
           p={8}
@@ -148,8 +148,8 @@ export default function CreateDisciplinePage() {
                   width: "100%",
                   padding: "8px 12px",
                   borderRadius: "6px",
-                  border: "1px solid #e2e8f0",
-                  backgroundColor: "#f7fafc",
+                  border: "1px solid var(--chakra-colors-border)",
+                  backgroundColor: "var(--chakra-colors-inputBg)",
                   fontSize: "14px",
                 }}
               >
@@ -172,11 +172,11 @@ export default function CreateDisciplinePage() {
                 value={formData.name}
                 onChange={handleChange}
                 placeholder="Nhập tên danh mục"
-                bg="gray.50"
-                borderColor="gray.300"
+                bg="inputBg"
+                borderColor="border"
                 _focus={{
-                  bg: "white",
-                  borderColor: "blue.500",
+                  bg: "surface",
+                  borderColor: "focusRing",
                   boxShadow: "0 0 0 1px rgba(66, 153, 225, 0.5)",
                 }}
               />
@@ -195,7 +195,7 @@ export default function CreateDisciplinePage() {
                   onChange={handleChange}
                   style={{ width: "18px", height: "18px", cursor: "pointer" }}
                 />
-                <Text fontSize="sm" color="gray.600">
+                <Text fontSize="sm" color="mutedText">
                   Bật để danh mục được sử dụng
                 </Text>
               </Flex>
@@ -212,11 +212,11 @@ export default function CreateDisciplinePage() {
                 onChange={handleChange}
                 placeholder="Nhập mô tả chi tiết"
                 rows={3}
-                bg="gray.50"
-                borderColor="gray.300"
+                bg="inputBg"
+                borderColor="border"
                 _focus={{
-                  bg: "white",
-                  borderColor: "blue.500",
+                  bg: "surface",
+                  borderColor: "focusRing",
                   boxShadow: "0 0 0 1px rgba(66, 153, 225, 0.5)",
                 }}
               />

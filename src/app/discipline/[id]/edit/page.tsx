@@ -84,7 +84,7 @@ export default function EditDisciplinePage() {
       | React.ChangeEvent<HTMLSelectElement>
       | React.ChangeEvent<HTMLTextAreaElement>
   ) => {
-    const target = e.target;
+    const target = e.target as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
     const { name, value, type } = target;
     const checked =
       type === "checkbox" ? (target as HTMLInputElement).checked : undefined;
@@ -138,15 +138,15 @@ export default function EditDisciplinePage() {
         display="flex"
         justifyContent="center"
         alignItems="center"
-        bg="gray.50"
+        bg="pageBg"
       >
-        <Text color="gray.500">Đang tải dữ liệu...</Text>
+        <Text color="mutedText">Đang tải dữ liệu...</Text>
       </Box>
     );
   }
 
   return (
-    <Box bg="gray.50" minH="100vh" py={8}>
+    <Box bg="pageBg" minH="100vh" py={8}>
       {/* Container giới hạn chiều rộng */}
       <Box px={10} w="full" maxW="6xl" mx="auto">
         {/* Header */}
@@ -156,8 +156,9 @@ export default function EditDisciplinePage() {
               aria-label="Quay lại"
               onClick={() => router.back()}
               variant="ghost"
-              icon={<ChevronLeftIcon boxSize={5} />}
-            />
+            >
+              <ChevronLeftIcon boxSize={5} />
+            </IconButton>
             <Heading size="md">CHỈNH SỬA DANH MỤC</Heading>
           </Flex>
 
@@ -172,7 +173,7 @@ export default function EditDisciplinePage() {
         </Flex>
 
         {/* Form box */}
-        <Box bg="white" borderRadius="md" boxShadow="sm" p={8} w="full">
+        <Box bg="surface" borderRadius="md" boxShadow="sm" p={8} w="full">
           <Grid templateColumns="repeat(2, 1fr)" gap={6}>
             <GridItem>
               <Text fontSize="sm" fontWeight="medium" mb={1}>
@@ -186,8 +187,8 @@ export default function EditDisciplinePage() {
                   width: "100%",
                   padding: "8px 12px",
                   borderRadius: "6px",
-                  border: "1px solid #e2e8f0",
-                  backgroundColor: "#f7fafc",
+                  border: "1px solid var(--chakra-colors-border)",
+                  backgroundColor: "var(--chakra-colors-inputBg)",
                   fontSize: "14px",
                 }}
               >
@@ -209,13 +210,12 @@ export default function EditDisciplinePage() {
                 value={formData.code}
                 isDisabled
                 placeholder="Mã danh mục (không thể chỉnh sửa)"
-                bg="gray.100"
-                borderColor="gray.200"
-                cursor="not-allowed"
-                _focus={{
-                  bg: "gray.100",
-                  borderColor: "gray.200",
-                  boxShadow: "none",
+                bg="inputBg"
+                borderColor="border"
+                _disabled={{
+                  bg: "inputBg",
+                  borderColor: "border",
+                  cursor: "not-allowed",
                 }}
               />
             </GridItem>
@@ -229,11 +229,11 @@ export default function EditDisciplinePage() {
                 value={formData.name}
                 onChange={handleChange}
                 placeholder="Nhập tên danh mục"
-                bg="gray.50"
-                borderColor="gray.300"
+                bg="inputBg"
+                borderColor="border"
                 _focus={{
-                  bg: "white",
-                  borderColor: "blue.500",
+                  bg: "surface",
+                  borderColor: "focusRing",
                   boxShadow: "0 0 0 1px rgba(66, 153, 225, 0.5)",
                 }}
               />
@@ -251,7 +251,7 @@ export default function EditDisciplinePage() {
                   onChange={handleChange}
                   style={{ width: "18px", height: "18px", cursor: "pointer" }}
                 />
-                <Text fontSize="sm" color="gray.600">
+                <Text fontSize="sm" color="mutedText">
                   Bật để danh mục được sử dụng
                 </Text>
               </Flex>
@@ -267,18 +267,16 @@ export default function EditDisciplinePage() {
                 onChange={handleChange}
                 placeholder="Nhập mô tả chi tiết"
                 rows={3}
-                bg="gray.50"
-                borderColor="gray.300"
+                bg="inputBg"
+                borderColor="border"
                 _focus={{
-                  bg: "white",
-                  borderColor: "blue.500",
+                  bg: "surface",
+                  borderColor: "focusRing",
                   boxShadow: "0 0 0 1px rgba(66, 153, 225, 0.5)",
                 }}
               />
             </GridItem>
           </Grid>
-
-          
         </Box>
       </Box>
     </Box>
