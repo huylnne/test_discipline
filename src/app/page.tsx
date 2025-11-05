@@ -1,4 +1,3 @@
-// ...existing code...
 "use client";
 
 import { useRouter } from "next/navigation";
@@ -109,18 +108,21 @@ export default function Home() {
       filter: false,
       cellRenderer: (props: ICellRendererParams) => {
         const active = Boolean(props.value);
-        const bg = active ? "var(--chakra-colors-green-100)" : "var(--chakra-colors-gray-100)";
-        const color = active ? "var(--chakra-colors-green-800)" : "var(--chakra-colors-gray-800)";
         return (
           <span
             style={{
-              display: "inline-block",
-              padding: "6px 12px",
-              borderRadius: 999,
-              fontSize: 12,
-              fontWeight: 600,
-              backgroundColor: bg,
-              color: color,
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "146px",
+              height: "32px",
+              padding: 0,
+              borderRadius: "6px",
+              fontSize: "14px",
+              fontWeight: 500,
+              backgroundColor: active ? "#F0FFF4" : "#F7FAFC",
+              color: active ? "#38A169" : "#718096",
+              border: active ? "1px solid #38A169" : "1px solid #CBD5E0",
             }}
           >
             {active ? "Đang hoạt động" : "Không hoạt động"}
@@ -135,9 +137,16 @@ export default function Home() {
       width: 120,
       sortable: false,
       filter: false,
-      cellClass: "text-center",
+      cellClass: "text-center actions-column",
       cellRenderer: (props: ICellRendererParams) => (
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
+          }}
+        >
           <button
             onClick={() => router.push(`/discipline/${props.data.id}/edit`)}
             title="Sửa"
@@ -151,12 +160,25 @@ export default function Home() {
               background: "transparent",
             }}
             onMouseEnter={(e) =>
-              (e.currentTarget.style.backgroundColor = "var(--chakra-colors-accentHover)")
+              (e.currentTarget.style.backgroundColor =
+                "var(--chakra-colors-accentHover)")
             }
-            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.backgroundColor = "transparent")
+            }
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" color="currentColor" xmlns="http://www.w3.org/2000/svg">
-              <path d="M14.06 9.02L14.98 9.94L5.92 19H5V18.08L14.06 9.02ZM17.66 3C17.41 3 17.15 3.1 16.96 3.29L15.13 5.12L18.88 8.87L20.71 7.04C21.1 6.65 21.1 6.02 20.71 5.63L18.37 3.29C18.17 3.09 17.92 3 17.66 3ZM14.06 6.19L3 17.25V21H6.75L17.81 9.94L14.06 6.19Z" fill="currentColor" />
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              color="currentColor"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M14.06 9.02L14.98 9.94L5.92 19H5V18.08L14.06 9.02ZM17.66 3C17.41 3 17.15 3.1 16.96 3.29L15.13 5.12L18.88 8.87L20.71 7.04C21.1 6.65 21.1 6.02 20.71 5.63L18.37 3.29C18.17 3.09 17.92 3 17.66 3ZM14.06 6.19L3 17.25V21H6.75L17.81 9.94L14.06 6.19Z"
+                fill="currentColor"
+              />
             </svg>
           </button>
 
@@ -173,12 +195,25 @@ export default function Home() {
               background: "transparent",
             }}
             onMouseEnter={(e) =>
-              (e.currentTarget.style.backgroundColor = "var(--chakra-colors-red-50)")
+              (e.currentTarget.style.backgroundColor =
+                "var(--chakra-colors-red-50)")
             }
-            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.backgroundColor = "transparent")
+            }
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" color="currentColor" xmlns="http://www.w3.org/2000/svg">
-              <path d="M16 9V19H8V9H16ZM14.5 3H9.5L8.5 4H5V6H19V4H15.5L14.5 3ZM18 7H6V19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V7Z" fill="currentColor" />
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              color="currentColor"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M16 9V19H8V9H16ZM14.5 3H9.5L8.5 4H5V6H19V4H15.5L14.5 3ZM18 7H6V19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V7Z"
+                fill="currentColor"
+              />
             </svg>
           </button>
         </div>
@@ -219,7 +254,9 @@ export default function Home() {
               />
             </div>
 
-            <CreateButtonComponent onClick={() => router.push("/discipline/create")} />
+            <CreateButtonComponent
+              onClick={() => router.push("/discipline/create")}
+            />
           </div>
         </div>
 

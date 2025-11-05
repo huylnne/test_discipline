@@ -15,6 +15,9 @@ const theme = extendTheme({
       focusRing: { default: "blue.500", _dark: "blue.300" },
       mutedText: { default: "gray.600", _dark: "gray.300" },
       accentHover: { default: "blue.50", _dark: "blue.900" },
+      primaryBtn:{default:"#263E90"},
+      primaryBtnHover:{default:"gray.100"},
+      primaryBtnText:{default:"white"},
     },
   },
 

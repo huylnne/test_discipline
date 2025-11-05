@@ -13,12 +13,12 @@ export default function SaveButtonComponent({
 }: SaveButtonComponentProps) {
   return (
     <Button
-      bg="#263E90"
-      color="white"
+      bg="primaryBtn"
+      color="primaryBtnText"
       onClick={onClick}
       isLoading={isLoading}
       disabled={disabled}
-      _hover={{ bg: "gray.800" }}
+      _hover={{ bg: "primaryBtnHover" }}
     >
       Lưu
     </Button>

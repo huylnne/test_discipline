@@ -11,7 +11,7 @@ export default function CancelButtonComponent({
     <Button
       variant="outline"
       onClick={onClick}
-      _hover={{ bg: "gray.100" }}
+      _hover={{ bg: "primaryBtnHover" }}
     >
       Hủy
     </Button>

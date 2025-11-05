@@ -12,11 +12,11 @@ export default function CreateButtonComponent({
 }: CreateButtonComponentProps) {
   return (
     <Button
-      bg="#263E90"
-      color="white"
+      bg="primaryBtn"
+      color="primaryBtnText"
       onClick={onClick}
       isLoading={isLoading}
-      _hover={{ bg: "gray.800" }}
+      _hover={{ bg: "primaryBtnHover" }}
       {...props}
     >
       + Thêm mới

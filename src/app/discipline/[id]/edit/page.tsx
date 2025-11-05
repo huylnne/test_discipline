@@ -84,7 +84,10 @@ export default function EditDisciplinePage() {
       | React.ChangeEvent<HTMLSelectElement>
       | React.ChangeEvent<HTMLTextAreaElement>
   ) => {
-    const target = e.target as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+    const target = e.target as
+      | HTMLInputElement
+      | HTMLSelectElement
+      | HTMLTextAreaElement;
     const { name, value, type } = target;
     const checked =
       type === "checkbox" ? (target as HTMLInputElement).checked : undefined;
@@ -156,6 +159,8 @@ export default function EditDisciplinePage() {
               aria-label="Quay lại"
               onClick={() => router.back()}
               variant="ghost"
+              backgroundColor="white"
+              color="black"
             >
               <ChevronLeftIcon boxSize={5} />
             </IconButton>

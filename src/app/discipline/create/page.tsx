@@ -111,6 +111,8 @@ export default function CreateDisciplinePage() {
               aria-label="Quay lại"
               onClick={() => router.back()}
               variant="ghost"
+              backgroundColor="white"
+              color="black"
               icon={<ChevronLeftIcon boxSize={5} />}
             />
             <Heading size="md">THÊM MỚI DANH MỤC</Heading>
