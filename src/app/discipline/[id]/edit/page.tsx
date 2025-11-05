@@ -278,14 +278,7 @@ export default function EditDisciplinePage() {
             </GridItem>
           </Grid>
 
-          <Flex justify="flex-end" gap={3} mt={10}>
-            <Button variant="outline" onClick={() => router.back()}>
-              Hủy bỏ
-            </Button>
-            <Button colorScheme="blue" onClick={handleSave} isLoading={loading}>
-              Lưu thay đổi
-            </Button>
-          </Flex>
+          
         </Box>
       </Box>
     </Box>
