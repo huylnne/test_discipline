@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { disciplineReducer } from "./disciplineSlice";
+import disciplineReducer from "./controller/discipline.slice";
 
 export const store = configureStore({
   reducer: {

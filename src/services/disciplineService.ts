@@ -1,11 +1,12 @@
 import { ajax } from "rxjs/ajax";
 import { map, switchMap } from "rxjs/operators";
 import { Observable } from "rxjs";
-import { Discipline } from "../store/disciplineSlice";
+import { Discipline } from "../@types/discipline";
 
 const API_BASE = "https://api.hawee.hicas.vn/api/app/discipline";
 const PROJECT_BASE = "https://api.hawee.hicas.vn/api/app/project";
 const TOKEN_URL = "https://api.hawee.hicas.vn/connect/token";
+
 
 interface Project {
   id: string;
