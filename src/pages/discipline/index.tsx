@@ -41,7 +41,6 @@ export default function DisciplinePage() {
     loadData();
   }, [loadData]);
 
-  // ====== Bộ lọc tìm kiếm ======
   const filteredList = list.filter((item: Discipline) => {
     const s = search.toLowerCase();
     return (
@@ -51,7 +50,6 @@ export default function DisciplinePage() {
     );
   });
 
-  // ====== Xử lý Xóa ======
   const handleDeleteClick = (id: string) => {
     setSelectedDeleteId(id);
     setDeletePopupOpen(true);
@@ -183,77 +181,95 @@ export default function DisciplinePage() {
     },
   ];
 
-  // ====== Giao diện ======
   return (
     <div
-      className="h-screen flex flex-col"
-      style={{ backgroundColor: "var(--chakra-colors-pageBg)" }}
+      style={{
+        height: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        backgroundColor: "var(--chakra-colors-pageBg)",
+      }}
     >
-      <div className="flex-1 flex flex-col p-6 max-w-full">
-        {/* Header */}
+      {/* Header */}
+      <div
+        style={{
+          backgroundColor: "#FFFFFF",
+          borderBottom: "1px solid #E2E8F0",
+          padding: "16px 24px",
+          flexShrink: 0,
+        }}
+      >
         <div
           style={{
-            backgroundColor: "#FFFFFF",
-            borderBottom: "1px solid #E2E8F0",
-            padding: "16px 24px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
           }}
         >
-          <div
+          <h1
             style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
+              fontSize: 16,
+              fontWeight: 700,
+              color: "#2D3748",
+              margin: 0,
+              letterSpacing: "0.3px",
             }}
           >
-            <h1
-              style={{
-                fontSize: 16,
-                fontWeight: 700,
-                color: "#2D3748",
-                margin: 0,
-                letterSpacing: "0.3px",
-              }}
-            >
-              DANH SÁCH DANH MỤC
-            </h1>
+            DANH SÁCH DANH MỤC
+          </h1>
 
-            <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-              <input
-                type="text"
-                placeholder="Tìm kiếm"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                style={{
-                  height: 38,
-                  width: 280,
-                  padding: "0 12px",
-                  borderRadius: 6,
-                  border: "1px solid #CBD5E0",
-                  backgroundColor: "#FFFFFF",
-                  fontSize: 14,
-                  outline: "none",
-                }}
-              />
-              <CreateButtonComponent
-                onClick={() => router.push("/discipline/create")}
-              />
-            </div>
+          <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+            <input
+              type="text"
+              placeholder="Tìm kiếm"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              style={{
+                height: 38,
+                width: 280,
+                padding: "0 12px",
+                borderRadius: 6,
+                border: "1px solid #CBD5E0",
+                backgroundColor: "#FFFFFF",
+                fontSize: 14,
+                outline: "none",
+              }}
+            />
+            <CreateButtonComponent
+              onClick={() => router.push("/discipline/create")}
+            />
           </div>
         </div>
+      </div>
 
-        {/* AG Grid */}
+      {/* AG Grid - Flex để chiếm hết không gian */}
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          padding: "24px",
+          overflow: "hidden",
+        }}
+      >
         <div
-          className="flex-1 rounded-lg shadow-sm mt-4"
           style={{
+            flex: 1,
             backgroundColor: "#fff",
             border: "1px solid #E2E8F0",
-            margin: "24px",
-            height: "100vh",
+            borderRadius: "8px",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden",
           }}
         >
           <div
             className="ag-theme-quartz"
-            style={{ flex: 1, height: "100%", width: "100%" }}
+            style={{
+              height: "100%",
+              width: "100%",
+            }}
           >
             <AgGridReact<Discipline>
               theme="legacy"
@@ -267,26 +283,27 @@ export default function DisciplinePage() {
                 wrapText: false,
                 autoHeight: false,
               }}
+              domLayout="normal"
               rowHeight={64}
               headerHeight={55}
               animateRows={true}
             />
           </div>
         </div>
-
-        {/* Popup xác nhận xoá */}
-        <ConfirmDeletePopup
-          isOpen={deletePopupOpen}
-          onClose={() => {
-            setDeletePopupOpen(false);
-            setSelectedDeleteId(null);
-          }}
-          onConfirm={handleConfirmDelete}
-          isLoading={deleteLoading}
-          title="Xác nhận xóa"
-          message="Bạn có chắc chắn muốn xóa danh mục này không? Hành động này không thể hoàn tác."
-        />
       </div>
+
+      {/* Popup xác nhận xoá */}
+      <ConfirmDeletePopup
+        isOpen={deletePopupOpen}
+        onClose={() => {
+          setDeletePopupOpen(false);
+          setSelectedDeleteId(null);
+        }}
+        onConfirm={handleConfirmDelete}
+        isLoading={deleteLoading}
+        title="Xác nhận xóa"
+        message="Bạn có chắc chắn muốn xóa danh mục này không? Hành động này không thể hoàn tác."
+      />
     </div>
   );
 }
