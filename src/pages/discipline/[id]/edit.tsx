@@ -1,36 +1,21 @@
 "use client";
 
-import {
-  Box,
-  Button,
-  Flex,
-  Grid,
-  GridItem,
-  Heading,
-  IconButton,
-  Input,
-  Text,
-  Textarea,
-  useToast,
-} from "@chakra-ui/react";
-import { ChevronLeftIcon } from "@chakra-ui/icons";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/router"; // ✅ Đổi từ next/navigation
-import {
-  getDiscipline$,
-  updateDiscipline$,
-  getProjects$,
-} from "../../../services/disciplineService";
+import { useRouter } from "next/router";
+import DisciplineApi from "../../../api/disciplineApi";
+import CancelButtonComponent from "../../../components/CancelButtonComponent";
+import SaveButtonComponent from "../../../components/SaveButtonComponent";
+import { Discipline, Project } from "../../../@types/discipline";
 
 export default function EditDisciplinePage() {
   const router = useRouter();
-  const toast = useToast();
-  const { id } = router.query; // ✅ Lấy id từ router.query
+  const { id } = router.query;
 
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
-  const [projects, setProjects] = useState<{ id: string; name: string }[]>([]);
-  const [formData, setFormData] = useState({
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [formData, setFormData] = useState<Discipline>({
+    id: "",
     code: "",
     name: "",
     description: "",
@@ -38,55 +23,53 @@ export default function EditDisciplinePage() {
     projectId: "",
   });
 
-  // Lấy dữ liệu danh mục
+  // Load discipline data
   useEffect(() => {
     if (!id || typeof id !== "string") return;
 
-    const sub = getDiscipline$(id).subscribe({
+    const sub = DisciplineApi.getById(id).subscribe({
       next: (data) => {
-        setFormData({
-          code: data.code,
-          name: data.name,
-          description: data.description || "",
-          isActive: data.isActive,
-          projectId: data.projectId || "",
-        });
+        if (data) {
+          setFormData(data);
+        } else {
+          setFormData({
+            id: "",
+            code: "",
+            name: "",
+            description: "",
+            isActive: true,
+            projectId: "",
+          });
+        }
         setInitialLoading(false);
       },
       error: (err) => {
-        toast({
-          title: "Lỗi khi tải dữ liệu",
-          description: err.message,
-          status: "error",
-          duration: 4000,
-          isClosable: true,
-        });
+        console.error(" Load discipline error:", err);
+        alert("Lỗi khi tải dữ liệu");
         setInitialLoading(false);
       },
     });
 
     return () => sub.unsubscribe();
-  }, [id, toast]);
+  }, [id]);
 
-  // Lấy danh sách dự án
+  // Load projects
   useEffect(() => {
-    const sub = getProjects$().subscribe({
+    const sub = DisciplineApi.getProjects().subscribe({
       next: (data) => setProjects(data),
-      error: () => setProjects([]),
+      error: (err) => {
+        console.error(" Load projects error:", err);
+        setProjects([]);
+      },
     });
     return () => sub.unsubscribe();
   }, []);
 
   const handleChange = (
-    e:
-      | React.ChangeEvent<HTMLInputElement>
-      | React.ChangeEvent<HTMLSelectElement>
-      | React.ChangeEvent<HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
-    const target = e.target;
-    const { name, value, type } = target;
-    const checked =
-      type === "checkbox" ? (target as HTMLInputElement).checked : undefined;
+    const { name, value, type } = e.target;
+    const checked = type === "checkbox" ? (e.target as HTMLInputElement).checked : undefined;
     setFormData({
       ...formData,
       [name]: type === "checkbox" ? checked : value,
@@ -94,101 +77,141 @@ export default function EditDisciplinePage() {
   };
 
   const handleSave = () => {
-    if (!formData.code.trim() || !formData.name.trim() || !formData.projectId) {
-      toast({
-        title: "Thiếu thông tin bắt buộc",
-        description: "Vui lòng nhập mã, tên danh mục và chọn dự án.",
-        status: "warning",
-        duration: 3000,
-        isClosable: true,
-      });
+    if (!formData.name.trim() || !formData.projectId) {
+      alert("Vui lòng nhập tên danh mục và chọn dự án.");
       return;
     }
 
     if (typeof id !== "string") return;
 
     setLoading(true);
-    updateDiscipline$(id, { ...formData, id }).subscribe({
+    DisciplineApi.update(id, formData).subscribe({
       next: () => {
         setLoading(false);
-        toast({
-          title: "Cập nhật thành công",
-          status: "success",
-          duration: 2500,
-          isClosable: true,
-        });
-        router.push("/");
+        router.push("/discipline");
       },
       error: (err) => {
         setLoading(false);
-        toast({
-          title: "Lỗi khi cập nhật danh mục",
-          description: err.message,
-          status: "error",
-          duration: 4000,
-          isClosable: true,
-        });
+        alert("Lỗi: " + err.message);
       },
     });
   };
 
   if (initialLoading) {
     return (
-      <Box
-        minH="100vh"
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        bg="pageBg"
+      <div
+        style={{
+          minHeight: "100vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "#F7FAFC",
+        }}
       >
-        <Text color="mutedText">Đang tải dữ liệu...</Text>
-      </Box>
+        <p style={{ color: "#718096" }}>Đang tải dữ liệu...</p>
+      </div>
     );
   }
 
   return (
-    <Box bg="pageBg" minH="100vh" py={8}>
-      <Box px={10} w="full" maxW="6xl" mx="auto">
-        <Flex align="center" justify="space-between" mb={6}>
-          <Flex align="center" gap={3}>
-            <IconButton
-              aria-label="Quay lại"
+    <div style={{ minHeight: "100vh", backgroundColor: "#F7FAFC", paddingTop: 24 }}>
+      {/* Header */}
+      <div
+        style={{
+          backgroundColor: "#FFFFFF",
+          border: "1px solid #E2E8F0",
+          borderBottom: "none",
+          padding: "16px 24px",
+          maxWidth: "1200px",
+          margin: "0 auto",
+          borderRadius: "8px 8px 0 0",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <button
               onClick={() => router.back()}
-              variant="ghost"
-              backgroundColor="white"
-              color="black"
-              icon={<ChevronLeftIcon boxSize={5} />}
-            />
-            <Heading size="md">CHỈNH SỬA DANH MỤC</Heading>
-          </Flex>
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: 6,
+                border: "1px solid #E2E8F0",
+                backgroundColor: "#FFFFFF",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+              }}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M15 18L9 12L15 6" stroke="#2D3748" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </button>
+            <h1
+              style={{
+                fontSize: 16,
+                fontWeight: 700,
+                color: "#2D3748",
+                margin: 0,
+              }}
+            >
+              CHỈNH SỬA DANH MỤC
+            </h1>
+          </div>
 
-          <Flex gap={3}>
-            <Button variant="outline" onClick={() => router.back()}>
-              Hủy bỏ
-            </Button>
-            <Button colorScheme="blue" onClick={handleSave} isLoading={loading}>
-              Lưu thay đổi
-            </Button>
-          </Flex>
-        </Flex>
+          <div style={{ display: "flex", gap: 12 }}>
+            <CancelButtonComponent onClick={() => router.back()} />
+            <SaveButtonComponent onClick={handleSave} isLoading={loading} />
+          </div>
+        </div>
+      </div>
 
-        <Box bg="surface" borderRadius="md" boxShadow="sm" p={8} w="full">
-          <Grid templateColumns="repeat(2, 1fr)" gap={6}>
-            <GridItem>
-              <Text fontSize="sm" fontWeight="medium" mb={1}>
-                Dự án <span style={{ color: "red" }}>*</span>
-              </Text>
+      {/* Form */}
+      <div style={{ maxWidth: "1200px", margin: "0 auto", marginBottom: 24 }}>
+        <div
+          style={{
+            backgroundColor: "#FFFFFF",
+            borderRadius: "0 0 8px 8px",
+            padding: "24px",
+            border: "1px solid #E2E8F0",
+            borderTop: "none",
+          }}
+        >
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+            {/* Dự án */}
+            <div>
+              <label
+                style={{
+                  display: "block",
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: "#2D3748",
+                  marginBottom: 8,
+                }}
+              >
+                Dự án <span style={{ color: "#E53E3E" }}>*</span>
+              </label>
               <select
                 name="projectId"
                 value={formData.projectId}
                 onChange={handleChange}
                 style={{
                   width: "100%",
-                  padding: "8px 12px",
-                  borderRadius: "6px",
-                  border: "1px solid var(--chakra-colors-border)",
-                  backgroundColor: "var(--chakra-colors-inputBg)",
-                  fontSize: "14px",
+                  height: 40,
+                  padding: "0 12px",
+                  borderRadius: 6,
+                  border: "1px solid #CBD5E0",
+                  backgroundColor: "#FFFFFF",
+                  fontSize: 14,
+                  color: formData.projectId ? "#2D3748" : "#A0AEC0",
+                  outline: "none",
+                  cursor: "pointer",
                 }}
               >
                 <option value="">Chọn dự án</option>
@@ -198,76 +221,149 @@ export default function EditDisciplinePage() {
                   </option>
                 ))}
               </select>
-            </GridItem>
+            </div>
 
-            <GridItem>
-              <Text fontSize="sm" fontWeight="medium" mb={1}>
-                Mã danh mục <span style={{ color: "red" }}>*</span>
-              </Text>
-              <Input
+            {/* Mã danh mục */}
+            <div>
+              <label
+                style={{
+                  display: "block",
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: "#2D3748",
+                  marginBottom: 8,
+                }}
+              >
+                Mã danh mục <span style={{ color: "#E53E3E" }}>*</span>
+              </label>
+              <input
+                type="text"
                 name="code"
                 value={formData.code}
-                isDisabled
+                disabled
                 placeholder="Mã danh mục (không thể chỉnh sửa)"
-                bg="inputBg"
-                borderColor="border"
-                _disabled={{
-                  bg: "inputBg",
-                  borderColor: "border",
+                style={{
+                  width: "100%",
+                  height: 40,
+                  padding: "0 12px",
+                  borderRadius: 6,
+                  border: "1px solid #CBD5E0",
+                  backgroundColor: "#F7FAFC",
+                  fontSize: 14,
+                  outline: "none",
                   cursor: "not-allowed",
+                  color: "#718096",
                 }}
               />
-            </GridItem>
+            </div>
 
-            <GridItem>
-              <Text fontSize="sm" fontWeight="medium" mb={1}>
-                Tên danh mục <span style={{ color: "red" }}>*</span>
-              </Text>
-              <Input
+            {/* Tên danh mục */}
+            <div>
+              <label
+                style={{
+                  display: "block",
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: "#2D3748",
+                  marginBottom: 8,
+                }}
+              >
+                Tên danh mục <span style={{ color: "#E53E3E" }}>*</span>
+              </label>
+              <input
+                type="text"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
                 placeholder="Nhập tên danh mục"
-                bg="inputBg"
-                borderColor="border"
+                style={{
+                  width: "100%",
+                  height: 40,
+                  padding: "0 12px",
+                  borderRadius: 6,
+                  border: "1px solid #CBD5E0",
+                  backgroundColor: "#FFFFFF",
+                  fontSize: 14,
+                  outline: "none",
+                }}
               />
-            </GridItem>
+            </div>
 
-            <GridItem>
-              <Text fontSize="sm" fontWeight="medium" mb={2}>
+            {/* Trạng thái hoạt động */}
+            <div>
+              <label
+                style={{
+                  display: "block",
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: "#2D3748",
+                  marginBottom: 8,
+                }}
+              >
                 Trạng thái hoạt động
-              </Text>
-              <Flex align="center" gap={3}>
+              </label>
+              <label
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  cursor: "pointer",
+                  width: "fit-content",
+                }}
+              >
                 <input
                   type="checkbox"
                   name="isActive"
                   checked={formData.isActive}
                   onChange={handleChange}
-                  style={{ width: "18px", height: "18px", cursor: "pointer" }}
+                  style={{
+                    width: 20,
+                    height: 20,
+                    cursor: "pointer",
+                    accentColor: "#3182CE",
+                  }}
                 />
-                <Text fontSize="sm" color="mutedText">
+                <span style={{ fontSize: 14, color: "#4A5568" }}>
                   Bật để danh mục được sử dụng
-                </Text>
-              </Flex>
-            </GridItem>
+                </span>
+              </label>
+            </div>
 
-            <GridItem colSpan={2}>
-              <Text fontSize="sm" fontWeight="medium" mb={1}>
+            {/* Mô tả */}
+            <div style={{ gridColumn: "1 / -1" }}>
+              <label
+                style={{
+                  display: "block",
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: "#2D3748",
+                  marginBottom: 8,
+                }}
+              >
                 Mô tả
-              </Text>
-              <Textarea
+              </label>
+              <textarea
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
                 placeholder="Nhập mô tả chi tiết"
-                rows={3}
-                bg="inputBg"
-                borderColor="border"
+                rows={4}
+                style={{
+                  width: "100%",
+                  padding: 12,
+                  borderRadius: 6,
+                  border: "1px solid #CBD5E0",
+                  backgroundColor: "#FFFFFF",
+                  fontSize: 14,
+                  outline: "none",
+                  resize: "vertical",
+                  fontFamily: "inherit",
+                }}
               />
-            </GridItem>
-          </Grid>
-        </Box>
-      </Box>
-    </Box>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

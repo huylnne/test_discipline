@@ -11,6 +11,7 @@ import CreateButtonComponent from "../../components/CreateButtonComponent";
 import ConfirmDeletePopup from "../../components/ConfirmDeletePopup";
 import { Discipline } from "../../@types/discipline";
 
+
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 export default function DisciplinePage() {
@@ -30,7 +31,7 @@ export default function DisciplinePage() {
         dispatch(setLoading(false));
       },
       error: (err: Error) => {
-        console.error("❌ DisciplineApi.getAll() error:", err);
+        console.error(" Load data error:", err);
         dispatch(setLoading(false));
       },
     });
@@ -292,7 +293,6 @@ export default function DisciplinePage() {
         </div>
       </div>
 
-      {/* Popup xác nhận xoá */}
       <ConfirmDeletePopup
         isOpen={deletePopupOpen}
         onClose={() => {
