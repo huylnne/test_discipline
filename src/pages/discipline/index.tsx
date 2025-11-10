@@ -13,7 +13,7 @@ import { Discipline } from "../../@types/discipline";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
-export default function HomePage() {
+export default function DisciplinePage() {
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
   const list = useSelector((state: RootState) => state.discipline.list);
@@ -22,7 +22,6 @@ export default function HomePage() {
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [selectedDeleteId, setSelectedDeleteId] = useState<string | null>(null);
 
-  // Load danh sách từ API
   const loadData = useCallback(() => {
     dispatch(setLoading(true));
     const sub = DisciplineApi.getAll().subscribe({
@@ -31,7 +30,7 @@ export default function HomePage() {
         dispatch(setLoading(false));
       },
       error: (err: Error) => {
-        console.error("ERROR:", err);
+        console.error("❌ DisciplineApi.getAll() error:", err);
         dispatch(setLoading(false));
       },
     });
@@ -42,13 +41,17 @@ export default function HomePage() {
     loadData();
   }, [loadData]);
 
-  const filteredList = list.filter(
-    (item: Discipline) =>
-      item.code.toLowerCase().includes(search.toLowerCase()) ||
-      item.name.toLowerCase().includes(search.toLowerCase()) ||
-      item.description.toLowerCase().includes(search.toLowerCase())
-  );
+  // ====== Bộ lọc tìm kiếm ======
+  const filteredList = list.filter((item: Discipline) => {
+    const s = search.toLowerCase();
+    return (
+      item.code.toLowerCase().includes(s) ||
+      item.name.toLowerCase().includes(s) ||
+      item.description.toLowerCase().includes(s)
+    );
+  });
 
+  // ====== Xử lý Xóa ======
   const handleDeleteClick = (id: string) => {
     setSelectedDeleteId(id);
     setDeletePopupOpen(true);
@@ -65,21 +68,22 @@ export default function HomePage() {
         setSelectedDeleteId(null);
         loadData();
       },
-      error: () => {
+      error: (err) => {
+        console.error(" Delete error:", err);
         setDeleteLoading(false);
       },
     });
   };
 
-  const columnDefs: ColDef[] = [
+  const columnDefs: ColDef<Discipline>[] = [
     { field: "code", headerName: "Mã danh mục", width: 150, sortable: true },
-    { field: "name", headerName: "Tên danh mục", width: 250, flex: 1, sortable: true },
-    { field: "description", headerName: "Mô tả", width: 300, flex: 1, sortable: true },
+    { field: "name", headerName: "Tên danh mục", flex: 1, sortable: true },
+    { field: "description", headerName: "Mô tả", flex: 1.5, sortable: true },
     {
       field: "isActive",
       headerName: "Trạng thái",
-      width: 150,
-      cellRenderer: (props: ICellRendererParams) => {
+      width: 180,
+      cellRenderer: (props: ICellRendererParams<Discipline, boolean>) => {
         const active = Boolean(props.value);
         return (
           <span
@@ -87,7 +91,7 @@ export default function HomePage() {
               display: "inline-flex",
               alignItems: "center",
               justifyContent: "center",
-              width: "146px",
+              width: "150px",
               height: "32px",
               borderRadius: "6px",
               fontSize: "14px",
@@ -105,8 +109,8 @@ export default function HomePage() {
     {
       colId: "actions",
       headerName: "Chức năng",
-      width: 120,
-      cellRenderer: (props: ICellRendererParams) => (
+      width: 140,
+      cellRenderer: (props: ICellRendererParams<Discipline>) => (
         <div
           style={{
             display: "flex",
@@ -115,9 +119,8 @@ export default function HomePage() {
             gap: 8,
           }}
         >
-          {/* Nút sửa */}
           <button
-            onClick={() => router.push(`/discipline/${props.data.id}/edit`)}
+            onClick={() => router.push(`/discipline/${props.data?.id}/edit`)}
             title="Sửa"
             style={{
               padding: 8,
@@ -125,15 +128,29 @@ export default function HomePage() {
               color: "#3182CE",
               background: "transparent",
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#EBF8FF")}
-            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.backgroundColor = "#EBF8FF")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.backgroundColor = "transparent")
+            }
           >
-            ✏️
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M14.06 9.02L14.98 9.94L5.92 19H5V18.08L14.06 9.02ZM17.66 3C17.41 3 17.15 3.1 16.96 3.29L15.13 5.12L18.88 8.87L20.71 7.04C21.1 6.65 21.1 6.02 20.71 5.63L18.37 3.29C18.17 3.09 17.92 3 17.66 3ZM14.06 6.19L3 17.25V21H6.75L17.81 9.94L14.06 6.19Z"
+                fill="#263E90"
+              />
+            </svg>
           </button>
 
-          {/* Nút xoá */}
           <button
-            onClick={() => handleDeleteClick(props.data.id)}
+            onClick={() => handleDeleteClick(props.data?.id || "")}
             title="Xóa"
             style={{
               padding: 8,
@@ -141,16 +158,32 @@ export default function HomePage() {
               color: "#E53E3E",
               background: "transparent",
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#FFF5F5")}
-            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.backgroundColor = "#FFF5F5")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.backgroundColor = "transparent")
+            }
           >
-            🗑️
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M16 9V19H8V9H16ZM14.5 3H9.5L8.5 4H5V6H19V4H15.5L14.5 3ZM18 7H6V19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V7Z"
+                fill="#F5222D"
+              />
+            </svg>
           </button>
         </div>
       ),
     },
   ];
 
+  // ====== Giao diện ======
   return (
     <div
       className="h-screen flex flex-col"
@@ -158,44 +191,77 @@ export default function HomePage() {
     >
       <div className="flex-1 flex flex-col p-6 max-w-full">
         {/* Header */}
-        <div className="flex justify-between h-[72px] !px-2 items-center">
-          <h1 className="text-3xl font-bold" style={{ color: "#1A202C" }}>
-            DANH SÁCH DANH MỤC
-          </h1>
-
-          {/* Search + Button */}
-          <div className="flex items-center gap-4">
-            <input
-              type="text"
-              placeholder="Tìm kiếm..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="h-[40px] px-4 rounded-lg"
+        <div
+          style={{
+            backgroundColor: "#FFFFFF",
+            borderBottom: "1px solid #E2E8F0",
+            padding: "16px 24px",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <h1
               style={{
-                backgroundColor: "#fff",
-                border: "1px solid #CBD5E0",
+                fontSize: 16,
+                fontWeight: 700,
                 color: "#2D3748",
+                margin: 0,
+                letterSpacing: "0.3px",
               }}
-            />
+            >
+              DANH SÁCH DANH MỤC
+            </h1>
 
-            <CreateButtonComponent onClick={() => router.push("/discipline/create")} />
+            <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+              <input
+                type="text"
+                placeholder="Tìm kiếm"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                style={{
+                  height: 38,
+                  width: 280,
+                  padding: "0 12px",
+                  borderRadius: 6,
+                  border: "1px solid #CBD5E0",
+                  backgroundColor: "#FFFFFF",
+                  fontSize: 14,
+                  outline: "none",
+                }}
+              />
+              <CreateButtonComponent
+                onClick={() => router.push("/discipline/create")}
+              />
+            </div>
           </div>
         </div>
 
-        {/* Bảng AG-Grid */}
+        {/* AG Grid */}
         <div
           className="flex-1 rounded-lg shadow-sm mt-4"
           style={{
             backgroundColor: "#fff",
             border: "1px solid #E2E8F0",
+            margin: "24px",
+            height: "100vh",
           }}
         >
-          <div className="ag-theme-quartz h-full w-full">
-            <AgGridReact
+          <div
+            className="ag-theme-quartz"
+            style={{ flex: 1, height: "100%", width: "100%" }}
+          >
+            <AgGridReact<Discipline>
+              theme="legacy"
               rowData={filteredList}
               columnDefs={columnDefs}
               pagination={true}
               paginationPageSize={10}
+              paginationPageSizeSelector={[10, 20, 50]}
               defaultColDef={{
                 resizable: true,
                 wrapText: false,

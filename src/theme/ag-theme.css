@@ -1,0 +1,63 @@
+
+@import "ag-grid-community/styles/ag-grid.css";
+@import "ag-grid-community/styles/ag-theme-quartz.css";
+
+.ag-theme-quartz {
+  --ag-font-family: "Inter", system-ui, sans-serif;
+  --ag-background-color: #ffffff;
+  --ag-odd-row-background-color: #f9fafb;
+  --ag-header-background-color: #edf2f7;
+  --ag-header-foreground-color: #1a202c;
+  --ag-border-color: #e2e8f0;
+  --ag-font-size: 14px;
+  --ag-row-height: 60px;
+  --ag-header-height: 55px;
+  --ag-grid-size: 6px;
+}
+
+
+.ag-theme-quartz .ag-row-hover {
+  background-color: #ebf8ff !important;
+}
+
+
+.ag-theme-quartz .ag-cell {
+  display: flex;
+  align-items: center;
+  padding-left: 12px;
+  padding-right: 12px;
+  font-weight: 500;
+  color: #2d3748;
+}
+
+
+.ag-theme-quartz .ag-cell,
+.ag-theme-quartz .ag-cell-value {
+  color: #1a202c !important;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+
+.ag-theme-quartz .ag-row:nth-child(even) {
+  background-color: #f9fafb;
+}
+.ag-theme-quartz .ag-row:nth-child(odd) {
+  background-color: #ffffff;
+}
+
+/* Fix màu chữ bị trắng trên nền trắng */
+.ag-theme-alpine,
+.ag-theme-quartz {
+  --ag-foreground-color: #1a202c !important;
+  --ag-data-color: #1a202c !important;
+  --ag-header-foreground-color: #1a202c !important;
+}
+
+/* Đảm bảo text trong cell luôn hiển thị */
+.ag-theme-alpine .ag-cell,
+.ag-theme-quartz .ag-cell {
+  color: #1a202c !important;
+  font-weight: 500;
+  font-size: 14px;
+}

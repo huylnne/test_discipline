@@ -1,25 +1,29 @@
-import { Button, ButtonProps } from "@chakra-ui/react";
+import { Button } from "@chakra-ui/react";
 
-interface CreateButtonComponentProps extends ButtonProps {
+interface DeleteButtonComponentProps {
   onClick: () => void;
   isLoading?: boolean;
+  children?: React.ReactNode;
 }
 
-export default function CreateButtonComponent({
+export default function DeleteButtonComponent({
   onClick,
   isLoading = false,
-  ...props
-}: CreateButtonComponentProps) {
+  children = "Xóa",
+}: DeleteButtonComponentProps) {
   return (
     <Button
       bg="primaryBtn"
       color="primaryBtnText"
       onClick={onClick}
       isLoading={isLoading}
-      _hover={{ bg: "primaryBtnHover" }}
-      {...props}
+      fontWeight="bold"
     >
-      + Thêm mới
+      {children}
     </Button>
   );
 }
+
+
+
+

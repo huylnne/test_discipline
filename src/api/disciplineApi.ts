@@ -1,60 +1,100 @@
-import { Discipline, Project } from "../@types/discipline";
-import { Observable } from "rxjs";
+import { Observable, throwError } from "rxjs";
 import { map, catchError } from "rxjs/operators";
+import { Discipline, Project } from "../@types/discipline";
 import { httpClient } from "./http-client";
 import { API_ENDPOINTS } from "../common/constants";
 
-export default class DisciplineApi {
-  static getAll(): Observable<Discipline[]> {
-  return httpClient
-    .get<{ items: Discipline[] }>(`${API_ENDPOINTS.DISCIPLINE}?MaxResultCount=500`)
-    .pipe(
-      map((res) => {
-        const items = res.items || [];
-        return items.map((item: Partial<Discipline> & { projectId?: string; projectCode?: string }) => ({
-          id: item.id ?? item.projectId ?? "",
-          code: item.code ?? "",
-          name: item.name ?? item.projectCode ?? "Không có tên",
-          description: item.description ?? "",
-          isActive: item.isActive ?? true,
-        }));
-      }),
-      catchError((err) => {
-        console.error(" DisciplineApi.getAll() error:", err);
-        return [];
-      })
-    );
+interface PagedResponse<T> {
+  items: T[];
+  totalCount: number;
 }
 
+export default class DisciplineApi {
+  
+  static getAll(): Observable<Discipline[]> {
+    const api = `${API_ENDPOINTS.DISCIPLINE}?MaxResultCount=500`;
 
+    return httpClient.get<PagedResponse<Discipline> | Discipline[]>(api).pipe(
+      map((res) => {
+        
+        if (Array.isArray(res)) {
+          return res.map((d) => ({
+            id: d.id,
+            code: d.code,
+            name: d.name,
+            description: d.description,
+            isActive: d.isActive ?? true,
+          }));
+        }
+
+        
+        if (
+          typeof res === "object" &&
+          res !== null &&
+          Array.isArray((res as PagedResponse<Discipline>).items)
+        ) {
+          return (res as PagedResponse<Discipline>).items.map((d) => ({
+            id: d.id,
+            code: d.code,
+            name: d.name,
+            description: d.description,
+            isActive: d.isActive ?? true,
+          }));
+        }
+
+        
+        return [];
+      }),
+      catchError((error) => {
+        console.error("❌ DisciplineApi.getAll() error:", error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  
   static getById(id: string): Observable<Discipline | null> {
-    return httpClient.get(`${API_ENDPOINTS.DISCIPLINE}/${id}`).pipe(
-      map(res => res as Discipline || null)
+    const api = `${API_ENDPOINTS.DISCIPLINE}/${id}`;
+    return httpClient.get<Discipline>(api).pipe(
+      map((res) => res ?? null),
+      catchError((error) => throwError(() => error))
     );
   }
 
+  
   static create(data: Omit<Discipline, "id" | "code">): Observable<Discipline | null> {
-    return httpClient.post(API_ENDPOINTS.DISCIPLINE, data).pipe(
-      map(res => res as Discipline || null)
+    const api = API_ENDPOINTS.DISCIPLINE;
+    return httpClient.post<Discipline>(api, data).pipe(
+      map((res) => res ?? null),
+      catchError((error) => throwError(() => error))
     );
   }
 
+  
   static update(id: string, data: Discipline): Observable<Discipline | null> {
-    return httpClient.put(`${API_ENDPOINTS.DISCIPLINE}/${id}`, data).pipe(
-      map(res => res as Discipline || null)
+    const api = `${API_ENDPOINTS.DISCIPLINE}/${id}`;
+    return httpClient.put<Discipline>(api, data).pipe(
+      map((res) => res ?? null),
+      catchError((error) => throwError(() => error))
     );
   }
 
+  
   static delete(id: string): Observable<boolean> {
-    return httpClient.delete(`${API_ENDPOINTS.DISCIPLINE}/${id}`).pipe(
+    const api = `${API_ENDPOINTS.DISCIPLINE}/${id}`;
+    return httpClient.delete(api).pipe(
       map(() => true),
-      catchError(() => [false])
+      catchError(() => throwError(() => false))
     );
   }
 
+  
   static getProjects(): Observable<Project[]> {
-    return httpClient.get(API_ENDPOINTS.PROJECT).pipe(
-      map(res => (res as { items: Project[] }).items || [])
+    const api = API_ENDPOINTS.PROJECT;
+
+    return httpClient.get<PagedResponse<Project>>(api).pipe(
+      map((res) => (Array.isArray(res.items) ? res.items : [])),
+      catchError((error) => throwError(() => error))
     );
   }
 }

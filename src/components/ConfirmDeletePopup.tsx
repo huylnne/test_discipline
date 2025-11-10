@@ -1,4 +1,5 @@
 "use client";
+import { useEffect } from "react";
 import CancelButtonComponent from "./CancelButtonComponent";
 import DeleteButtonComponent from "./DeleteButtonComponent";
 
@@ -19,21 +20,100 @@ export default function ConfirmDeletePopup({
   title = "Xác nhận xóa",
   message = "Bạn có chắc chắn muốn xóa danh mục này không? Hành động này không thể hoàn tác.",
 }: ConfirmDeletePopupProps) {
+  // Lock scroll khi popup mở
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (
-    <>
-      <div className="fixed inset-0 bg-black/40 z-40"></div>
-      <div className="fixed inset-0 flex items-center justify-center z-50">
-        <div className="bg-white rounded-xl shadow-xl !p-6 w-full max-w-md w-[512px] h-[178px] ">
-          <h2 className="text-lg !font-bold !mb-2">{title}</h2>
-          <p className="text-gray-700 mb-6">{message}</p>
-          <div className="flex justify-end gap-3">
-            <CancelButtonComponent onClick={onClose} />
-            <DeleteButtonComponent onClick={onConfirm} isLoading={isLoading} />
-          </div>
+    <div
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 99999,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        backdropFilter: "blur(2px)",
+      }}
+      onClick={onClose}
+    >
+      <div
+        style={{
+          backgroundColor: "#ffffff",
+          borderRadius: "12px",
+          padding: "24px",
+          width: "90%",
+          maxWidth: "420px",
+          boxShadow: "0 20px 60px rgba(0, 0, 0, 0.3)",
+          animation: "modalFadeIn 0.2s ease-out",
+          position: "relative",
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Title */}
+        <h2
+          style={{
+            fontSize: "20px",
+            fontWeight: 700,
+            marginBottom: "12px",
+            color: "#1a202c",
+          }}
+        >
+          {title}
+        </h2>
+
+        {/* Message */}
+        <p
+          style={{
+            fontSize: "14px",
+            color: "#718096",
+            marginBottom: "24px",
+            lineHeight: "1.6",
+          }}
+        >
+          {message}
+        </p>
+
+        {/* Actions */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            gap: "12px",
+          }}
+        >
+          <CancelButtonComponent onClick={onClose} />
+          <DeleteButtonComponent onClick={onConfirm} isLoading={isLoading} />
         </div>
       </div>
-    </>
+
+      {/* Animation */}
+      <style jsx global>{`
+        @keyframes modalFadeIn {
+          from {
+            opacity: 0;
+            transform: scale(0.9) translateY(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+          }
+        }
+      `}</style>
+    </div>
   );
 }
